@@ -41,7 +41,7 @@ const SignUp = () => {
   };
 
   return (
-    <section className="min-h-[60vh] mt-20">
+    <section className="min-h-[51vh] mt-20 mb-12">
       <div className="flex flex-col md:flex-row md:items-center p-3 max-w-3xl mx-auto">
         <div className="flex-1">
           <Link to="/" className="font-bold text-4xl dark:text-white">

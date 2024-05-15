@@ -6,27 +6,28 @@ import userRoutes from "./routes/user.route.js";
 
 dotenv.config();
 
+const app = express();
+
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("MongoDB connected");
   })
   .catch((err) => {
-    console.log(err);
+    console.error("Error connecting to MongoDB:", err);
   });
 
-const app = express();
-
+// Middleware to parse JSON bodies
 app.use(express.json());
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000!!");
-});
-
+// Define routes
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 
-app.use("/api/auth", authRoutes);
-
+// Error handling middleware
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
@@ -35,4 +36,10 @@ app.use((err, req, res, next) => {
     statusCode,
     message,
   });
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

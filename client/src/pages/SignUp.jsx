@@ -20,22 +20,22 @@ const SignUp = () => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await fetch("api/auth/signup", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
-      if (data.success === false) {
-        return setErrorMessage(data.message);
-      }
       setLoading(false);
-      if (res.ok) {
-        navigate("/sign-in");
+
+      if (!res.ok) {
+        return setErrorMessage(data.message || "Something went wrong");
       }
+
+      navigate("/sign-in");
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage("An error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -70,7 +70,7 @@ const SignUp = () => {
             <div>
               <Label value="Your Email" />
               <TextInput
-                type="text"
+                type="email"
                 placeholder="Email"
                 id="email"
                 className="mt-1"
@@ -80,7 +80,7 @@ const SignUp = () => {
             <div>
               <Label value="Your Password" />
               <TextInput
-                type="text"
+                type="password"
                 placeholder="Password"
                 id="password"
                 className="mt-1"

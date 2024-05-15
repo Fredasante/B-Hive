@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import { errorHandler } from "../utils/error";
+import { errorHandler } from "../utils/error.js";
 
 export const signup = async (req, res) => {
   const { username, email, password } = req.body;

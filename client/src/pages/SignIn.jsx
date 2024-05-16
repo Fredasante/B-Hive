@@ -51,7 +51,7 @@ const SignIn = () => {
       <div className="flex flex-col md:flex-row md:items-center p-3 max-w-3xl mx-auto">
         <div className="flex-1">
           <Link to="/" className="font-bold text-4xl dark:text-white">
-            <span className="px-2 py-1 bg-[#0E7490] rounded-lg text-white">
+            <span className="px-2 py-1 bg-[#F06225] rounded-lg text-white">
               Blog
             </span>
             Hive
@@ -61,7 +61,7 @@ const SignIn = () => {
           </p>
         </div>
 
-        <div className="flex-1 border p-5 rounded-md">
+        <div className="flex-1 border border-gray-300 dark:border-gray-700 p-5 rounded-md">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Your Email" />

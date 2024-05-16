@@ -31,7 +31,7 @@ const Header = () => {
       <Button className="w-12 h-10 lg:hidden" color="gray" pill>
         <AiOutlineSearch />
       </Button>
-      <div className="flex gap-2 md:order-2">
+      <div className="flex gap-2 md:order-2 ">
         <Button
           onClick={() => dispatch(toggleTheme())}
           className="w-12 h-10 hidden sm:inline"
@@ -61,7 +61,7 @@ const Header = () => {
           </Dropdown>
         ) : (
           <Link to="/sign-in">
-            <Button gradientDuoTone="cyanToBlue" outline>
+            <Button gradientDuoTone="pinkToOrange" outline>
               Sign In
             </Button>
           </Link>

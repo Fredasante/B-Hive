@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 const DashProfile = () => {
   const { currentUser } = useSelector((state) => state.user);
   return (
-    <div className="max-w-lg mx-auto w-full">
+    <div className="max-w-lg mx-auto w-full mb-10">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
 
       <form className="flex flex-col gap-4 border p-5 rounded-lg border-gray-300 dark:border-gray-700">

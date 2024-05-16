@@ -15,12 +15,12 @@ const Dashboard = () => {
     }
   }, [location.search]);
   return (
-    <div className="flex flex-col md:flex-row min-h-[65vh]">
+    <div className="flex flex-col md:flex-row min-h-[65vh] max-w-screen-2xl mx-auto">
       <div className="md:w-56">
         <DashSidebar />
       </div>
 
-      <div>{tab === "profile" && <DashProfile />}</div>
+      {tab === "profile" && <DashProfile />}
     </div>
   );
 };

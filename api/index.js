@@ -3,16 +3,14 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app = express();
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("MongoDB connected");
   })
@@ -22,6 +20,9 @@ mongoose
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Middleware to parse urlencoded bodies
+app.use(cookieParser());
 
 // Define routes
 app.use("/api/auth", authRoutes);

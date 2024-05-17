@@ -10,6 +10,12 @@ import {
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import {
+  updateStart,
+  updateFailure,
+  UpdateSuccess,
+} from "../redux/user/UserSlice";
+import { useDispatch } from "react-redux";
 import { set } from "mongoose";
 
 const DashProfile = () => {
@@ -17,7 +23,14 @@ const DashProfile = () => {
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [imageFileUploading, setImageFileUploading] = useState(false);
+  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
+  const [updateUserError, setUpdateUserError] = useState(null);
+  const [formData, setFormData] = useState({});
+
   const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
   const filePickerRef = useRef();
 
   const handleImageChange = (e) => {
@@ -37,6 +50,7 @@ const DashProfile = () => {
 
   const uploadImage = async () => {
     setImageFileUploadError(null);
+    setImageFileUploading(true);
     const storage = getStorage(app);
     const fileName = new Date().getTime() + "-" + imageFile.name;
     const storageRef = ref(storage, fileName);
@@ -55,22 +69,73 @@ const DashProfile = () => {
         setImageFileUploadProgress(null);
         setImageFile(null);
         setImageFileUrl(null);
+        setImageFileUploading(false);
       },
       () => {
         // console.log("Upload complete");
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           // console.log("File available at", downloadURL);
           setImageFileUrl(downloadURL);
+          setFormData({ ...formData, profilePicture: downloadURL });
+          setImageFileUploading(false);
         });
       }
     );
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+  // console.log(formData);
+
+  const handleSubmit = async (e) => {
+    setUpdateUserError(null);
+    setUpdateUserSuccess(null);
+
+    e.preventDefault();
+    if (Object.keys(formData).length === 0) {
+      setUpdateUserError("Please update at least one field");
+      return;
+    }
+
+    if (imageFileUploading) {
+      setImageFileUploadError("Please wait for the image to upload");
+      return;
+    }
+
+    try {
+      dispatch(updateStart());
+
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
+      } else {
+        dispatch(UpdateSuccess(data));
+        setImageFileUploadError(null);
+        setUpdateUserSuccess("Profile updated successfully");
+      }
+    } catch (error) {
+      dispatch(updateFailure("Something went wrong"));
+    }
   };
 
   return (
     <div className="max-w-lg mx-auto w-full mb-10">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
 
-      <form className="flex flex-col gap-4 border p-5 rounded-lg border-gray-300 dark:border-gray-700">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 border p-5 rounded-lg border-gray-300 dark:border-gray-700"
+      >
         <input
           type="file"
           accept="image/*"
@@ -123,20 +188,39 @@ const DashProfile = () => {
           defaultValue={currentUser.username}
           id="username"
           placeholder="Username"
+          onChange={handleChange}
         />
         <TextInput
           type="email"
           defaultValue={currentUser.email}
           id="email"
           placeholder="Email"
+          onChange={handleChange}
         />
-        <TextInput type="password" id="password" placeholder="Password" />
+        <TextInput
+          type="password"
+          id="password"
+          placeholder="Password"
+          onChange={handleChange}
+        />
         <Button type="submit">Update</Button>
       </form>
       <div className="flex justify-between mt-5 p-3 md:p-0">
         <span className="text-red-500">Delete Account?</span>
         <span className="text-teal-500">Sign Out</span>
       </div>
+
+      {updateUserSuccess && (
+        <Alert className="mt-4" color="success">
+          {updateUserSuccess}
+        </Alert>
+      )}
+
+      {updateUserError && (
+        <Alert className="mt-4" color="failure">
+          {updateUserError}
+        </Alert>
+      )}
     </div>
   );
 };

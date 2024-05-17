@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -14,9 +14,12 @@ import {
   updateStart,
   updateFailure,
   UpdateSuccess,
+  deleteUserStart,
+  deleteUserFailure,
+  deleteUserSuccess,
 } from "../redux/user/UserSlice";
 import { useDispatch } from "react-redux";
-import { set } from "mongoose";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const DashProfile = () => {
   const [imageFile, setImageFile] = useState(null);
@@ -27,8 +30,9 @@ const DashProfile = () => {
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
+  const [showModal, setShowModal] = useState(false);
 
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const filePickerRef = useRef();
@@ -86,7 +90,6 @@ const DashProfile = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-  // console.log(formData);
 
   const handleSubmit = async (e) => {
     setUpdateUserError(null);
@@ -125,6 +128,26 @@ const DashProfile = () => {
       }
     } catch (error) {
       dispatch(updateFailure("Something went wrong"));
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    setShowModal(false);
+    try {
+      dispatch(deleteUserStart());
+
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(deleteUserFailure(data.message));
+      } else {
+        dispatch(deleteUserSuccess());
+      }
+    } catch (error) {
+      dispatch(deleteUserFailure("Something went wrong"));
     }
   };
 
@@ -206,7 +229,12 @@ const DashProfile = () => {
         <Button type="submit">Update</Button>
       </form>
       <div className="flex justify-between mt-5 p-3 md:p-0">
-        <span className="text-red-500">Delete Account?</span>
+        <span
+          onClick={() => setShowModal(true)}
+          className="text-red-500 cursor-pointer"
+        >
+          Delete Account?
+        </span>
         <span className="text-teal-500">Sign Out</span>
       </div>
 
@@ -221,6 +249,37 @@ const DashProfile = () => {
           {updateUserError}
         </Alert>
       )}
+
+      {error && (
+        <Alert className="mt-4" color="failure">
+          {error}
+        </Alert>
+      )}
+
+      <Modal
+        show={showModal}
+        size="md"
+        onClose={() => setShowModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete your account?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeleteUser}>
+                {"Yes, I'm sure"}
+              </Button>
+              <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

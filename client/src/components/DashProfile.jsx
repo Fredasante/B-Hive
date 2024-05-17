@@ -17,6 +17,7 @@ import {
   deleteUserStart,
   deleteUserFailure,
   deleteUserSuccess,
+  signOutSuccess,
 } from "../redux/user/UserSlice";
 import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -100,7 +101,6 @@ const DashProfile = () => {
       setUpdateUserError("Please update at least one field");
       return;
     }
-
     if (imageFileUploading) {
       setImageFileUploadError("Please wait for the image to upload");
       return;
@@ -151,6 +151,19 @@ const DashProfile = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      if (res.ok) {
+        dispatch(signOutSuccess());
+      }
+    } catch (error) {
+      console.log("Error signing out", error);
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto w-full mb-10">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
@@ -166,7 +179,6 @@ const DashProfile = () => {
           ref={filePickerRef}
           hidden
         />
-
         <div
           onClick={() => filePickerRef.current.click()}
           className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
@@ -235,7 +247,9 @@ const DashProfile = () => {
         >
           Delete Account?
         </span>
-        <span className="text-teal-500">Sign Out</span>
+        <span onClick={handleSignOut} className="text-teal-500 cursor-pointer">
+          Sign Out
+        </span>
       </div>
 
       {updateUserSuccess && (
@@ -243,13 +257,11 @@ const DashProfile = () => {
           {updateUserSuccess}
         </Alert>
       )}
-
       {updateUserError && (
         <Alert className="mt-4" color="failure">
           {updateUserError}
         </Alert>
       )}
-
       {error && (
         <Alert className="mt-4" color="failure">
           {error}

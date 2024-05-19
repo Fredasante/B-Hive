@@ -21,6 +21,7 @@ import {
 } from "../redux/user/UserSlice";
 import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 const DashProfile = () => {
   const [imageFile, setImageFile] = useState(null);
@@ -33,7 +34,7 @@ const DashProfile = () => {
   const [formData, setFormData] = useState({});
   const [showModal, setShowModal] = useState(false);
 
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const filePickerRef = useRef();
@@ -238,7 +239,16 @@ const DashProfile = () => {
           placeholder="Password"
           onChange={handleChange}
         />
-        <Button type="submit">Update</Button>
+        <Button disabled={loading || imageFileUploading} type="submit">
+          {loading ? "Loading..." : "Update"}
+        </Button>
+        {currentUser.isAdmin && (
+          <Link to="/create-post">
+            <Button className="w-full" outline type="button">
+              Create a Post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="flex justify-between mt-5 p-3 md:p-0">
         <span
@@ -267,7 +277,6 @@ const DashProfile = () => {
           {error}
         </Alert>
       )}
-
       <Modal
         show={showModal}
         size="md"

@@ -1,4 +1,4 @@
-# MERN Blog Application
+# Blog Hive
 
 This is a full-stack blog application built with the MERN stack (MongoDB, Express, React, Node.js), styled with Tailwind CSS, and state management handled by Redux Toolkit.
 
@@ -39,9 +39,7 @@ This is a full-stack blog application built with the MERN stack (MongoDB, Expres
 - `npm run build`: Build the frontend for production
 - `npm run eject`: Eject the create-react-app configuration
 
-3.
-
-### Usage
+3. ### Usage
 
 ```markdown
 1. Open your browser and go to `http://localhost:3000`.

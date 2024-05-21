@@ -24,7 +24,7 @@ This is a full-stack blog application built with the MERN stack (MongoDB, Expres
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/mern-blog-app.git
+   git clone https://github.com/Fredasante/Blog-Hive.git
    cd blog-hive
    ```
 
